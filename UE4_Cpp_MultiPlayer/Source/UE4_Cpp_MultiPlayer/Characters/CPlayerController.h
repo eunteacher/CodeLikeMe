@@ -13,6 +13,6 @@ public:
 	ACPlayerController();
 
 private:
-	class ACharacter* OwnerCharacter;
+	//class ACharacter* OwnerCharacter;
 	
 };

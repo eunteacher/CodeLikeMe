@@ -22,9 +22,24 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float Direction;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		bool EnableJump;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		bool Jumping;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		bool Crouching;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		FRotator ControlRotation;
+
 public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+private:
+	void LookUp();
 
 private:
 	class ACharacter* OwnerCharacter;

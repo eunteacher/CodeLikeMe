@@ -10,38 +10,55 @@
 ACPlayableCharacter::ACPlayableCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Mesh 값 셋팅
-	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -0.0f));
-	GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 360.0f));
-
+	
 	// 카메라 생성 및 초기값 설정
-	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>("FirstPersonCamera");
-	FirstPersonCamera->SetupAttachment(RootComponent);
-	FirstPersonCamera->SetRelativeLocation(FVector(-40.0f, 0.0f, 70.0f));
+	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	Camera->SetupAttachment(RootComponent);
+	Camera->SetRelativeLocation(FVector(-40.0f, 0.0f, 65.0f));
 
 	// 1인칭 메시 생성 
-	Mesh2P = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh2P");
-	Mesh2P->SetupAttachment(FirstPersonCamera);
+	FPMesh = CreateDefaultSubobject<USkeletalMeshComponent>("FPMesh");
+	FPMesh->SetupAttachment(Camera);
 
 	// 1인칭 메시 셋팅
 	USkeletalMesh* mesh;
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> asset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/Character/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
-	if(asset.Succeeded() == true)
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpMeshAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/Character/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
+	if(fpMeshAsset.Succeeded() == true)
 	{
-		mesh = asset.Object;
-		Mesh2P->SetSkeletalMesh(mesh);
+		mesh = fpMeshAsset.Object;
+		FPMesh->SetSkeletalMesh(mesh);
 	}
-	Mesh2P->SetRelativeLocation(FVector(20.0f, 0.0f, -170.0f));
-	Mesh2P->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	FPMesh->SetRelativeLocation(FVector(3.0f, -5.0f, -160.0f));
+	FPMesh->SetRelativeRotation(FRotator(2.0f, -20.0f, 5.0f));
 
+	// 1인칭 애님인스턴스 셋팅
 	TSubclassOf<UAnimInstance> animInstance;
-	ConstructorHelpers::FClassFinder<UAnimInstance> animAsset = ConstructorHelpers::FClassFinder<UAnimInstance>(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_FirstPerson.ABP_FirstPerson_C'"));
-	if(animAsset.Succeeded() == true)
+	ConstructorHelpers::FClassFinder<UAnimInstance> fpAnimAsset = ConstructorHelpers::FClassFinder<UAnimInstance>(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_FirstPerson.ABP_FirstPerson_C'"));
+	if(fpAnimAsset.Succeeded() == true)
 	{
-		//UE_LOG(LogTemp, Display, TEXT("animInstance Succeeded"));
+		//UE_LOG(LogTemp, Display, TEXT("fpAnimAsset Succeeded"));
+		animInstance = fpAnimAsset.Class;
+		FPMesh->SetAnimInstanceClass(animInstance);
+	}
+
+	// 3인칭 메시 셋팅
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	if (meshAsset.Succeeded() == true)
+	{
+		mesh = meshAsset.Object;
+		GetMesh()->SetSkeletalMesh(mesh);
+	}
+
+	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+
+	// 3인칭 애님인스턴스 셋팅
+	ConstructorHelpers::FClassFinder<UAnimInstance> animAsset = ConstructorHelpers::FClassFinder<UAnimInstance>(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_CPlayableCharacter.ABP_CPlayableCharacter_C'"));
+	if (animAsset.Succeeded() == true)
+	{
+		UE_LOG(LogTemp, Display, TEXT("animAsset Succeeded"));
 		animInstance = animAsset.Class;
-		Mesh2P->SetAnimInstanceClass(animInstance);
+		GetMesh()->SetAnimInstanceClass(animInstance);
 	}
 }
 
@@ -61,5 +78,10 @@ void ACPlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+FRotator ACPlayableCharacter::GetHorizontalControlRotation()
+{
+	return HorizontalControlRotation;
 }
 

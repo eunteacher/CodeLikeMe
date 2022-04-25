@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\UE4_Cpp_MultiPlayer.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{7BD6B11D-7B85-4F60-B95D-827DDF8600E1}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\UE4_Cpp_MultiPlayer.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\UE4_Cpp_MultiPlayerEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{9CC6E720-EF4F-4A72-9DC3-23BC925BB3A0}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\UE4_Cpp_MultiPlayer">
+      <UniqueIdentifier>{DF7961DD-2471-4AE0-9D2E-99A0AB947604}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\CGameMode.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\CGameMode.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClInclude>
+    <None Include="..\..\Source\UE4_Cpp_MultiPlayer\UE4_Cpp_MultiPlayer.Build.cs">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\UE4_Cpp_MultiPlayer.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\UE4_Cpp_MultiPlayer.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\UE4_Cpp_MultiPlayerGameModeBase.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\UE4_Cpp_MultiPlayerGameModeBase.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer</Filter>
+    </ClInclude>
+    <Filter Include="Source\UE4_Cpp_MultiPlayer\Characters">
+      <UniqueIdentifier>{23761D06-BEEF-4665-A613-5D86AAE98F37}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CAnimInstance.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CAnimInstance.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CPlayableCharacter.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CPlayableCharacter.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CPlayerController.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\CPlayerController.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\ICharacter.cpp">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\Characters\ICharacter.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Characters</Filter>
+    </ClInclude>
+    <Filter Include="Source\UE4_Cpp_MultiPlayer\Utilities">
+      <UniqueIdentifier>{448F02A2-4F3E-4175-98B8-BA7034776D46}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\UE4_Cpp_MultiPlayer\Utilities\Global.h">
+      <Filter>Source\UE4_Cpp_MultiPlayer\Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

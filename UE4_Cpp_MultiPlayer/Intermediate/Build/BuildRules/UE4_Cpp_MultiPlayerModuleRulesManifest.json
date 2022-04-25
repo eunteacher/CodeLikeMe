@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Unreal\\CodeLikeMe\\UE4_Cpp_MultiPlayer\\Source\\UE4_Cpp_MultiPlayer\\UE4_Cpp_MultiPlayer.Build.cs",
+		"C:\\Unreal\\CodeLikeMe\\UE4_Cpp_MultiPlayer\\Source\\UE4_Cpp_MultiPlayer.Target.cs",
+		"C:\\Unreal\\CodeLikeMe\\UE4_Cpp_MultiPlayer\\Source\\UE4_Cpp_MultiPlayerEditor.Target.cs"
+	],
+	"EngineVersion": "4.26.2"
+}
