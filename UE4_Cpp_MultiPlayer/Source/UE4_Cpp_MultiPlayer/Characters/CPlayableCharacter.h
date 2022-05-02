@@ -17,13 +17,16 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class USkeletalMeshComponent* FPMesh; // 1ÀÎÄª ¸Þ½Ã
 
-	// TODO :: ÃÑ ºÙÀÌ±â 
+	UPROPERTY(VisibleAnywhere)
+		class USkeletalMeshComponent* FPGun; // 1ÀÎÄª ÃÑ ¸Þ½Ã
+
+	UPROPERTY(VisibleAnywhere)
+		class USkeletalMeshComponent* Gun; // 3ÀÎÄª ÃÑ ¸Þ½Ã
+
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		FRotator HorizontalControlRotation; // ¼öÁ÷ ¹æÇâ
-
-
 
 public:
 	ACPlayableCharacter();
@@ -33,9 +36,19 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
 	virtual FRotator GetHorizontalControlRotation() override;
+
+private:
+	// Bind Axis
+	void OnHorizontalLook(float Axis);
+	void OnVerticalLook(float Axis);
+	void OnMoveForward(float Axis);
+	void OnMoveRight(float Axis);
+
+public:
+	void OnJump();
+	void OffJump();
 };

@@ -15,6 +15,7 @@ ACPlayableCharacter::ACPlayableCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(RootComponent);
 	Camera->SetRelativeLocation(FVector(-40.0f, 0.0f, 65.0f));
+	Camera->bUsePawnControlRotation = true;
 
 	// 1ÀÎÄª ¸Þ½Ã »ý¼º 
 	FPMesh = CreateDefaultSubobject<USkeletalMeshComponent>("FPMesh");
@@ -41,6 +42,20 @@ ACPlayableCharacter::ACPlayableCharacter()
 		FPMesh->SetAnimInstanceClass(animInstance);
 	}
 
+	// 1ÀÎÄª ÃÑ ¸Þ½Ã »ý¼º
+	FPGun = CreateDefaultSubobject<USkeletalMeshComponent>("FPGun");
+	FPGun->SetupAttachment(FPMesh, FName("GripPoint"));
+	//AttachToComponent(FPMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false), "GripPoint");
+
+	// 1ÀÎÄª ÃÑ ¸Þ½Ã ¼ÂÆÃ
+	// SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpGunAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	if(fpGunAsset.Succeeded() == true)
+	{
+		mesh = fpGunAsset.Object;
+		FPGun->SetSkeletalMesh(mesh);
+	}
+
 	// 3ÀÎÄª ¸Þ½Ã ¼ÂÆÃ
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (meshAsset.Succeeded() == true)
@@ -60,6 +75,19 @@ ACPlayableCharacter::ACPlayableCharacter()
 		animInstance = animAsset.Class;
 		GetMesh()->SetAnimInstanceClass(animInstance);
 	}
+
+	// 3ÀÎÄª ÃÑ ¸Þ½Ã »ý¼º
+	Gun = CreateDefaultSubobject<USkeletalMeshComponent>("Gun");
+	Gun->SetupAttachment(GetMesh(), FName("GunSocket"));
+	//AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false), "GunSocket");
+
+	// 3ÀÎÄª ÃÑ ¸Þ½Ã ¼ÂÆÃ
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> GunAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	if (fpGunAsset.Succeeded() == true)
+	{
+		mesh = fpGunAsset.Object;
+		Gun->SetSkeletalMesh(mesh);
+	}
 }
 
 void ACPlayableCharacter::BeginPlay()
@@ -78,10 +106,57 @@ void ACPlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Movement Action
+	// Bind Axis
+	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACPlayableCharacter::OnHorizontalLook);
+	PlayerInputComponent->BindAxis("VerticalLook", this, &ACPlayableCharacter::OnVerticalLook);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ACPlayableCharacter::OnMoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ACPlayableCharacter::OnMoveRight);
+
+	// Bind Action
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACPlayableCharacter::OnJump);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACPlayableCharacter::OffJump);
+
 }
 
 FRotator ACPlayableCharacter::GetHorizontalControlRotation()
 {
 	return HorizontalControlRotation;
+}
+
+void ACPlayableCharacter::OnHorizontalLook(float Axis)
+{
+	float HorizontalLookRate = 45.0f;
+	AddControllerYawInput(Axis * HorizontalLookRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ACPlayableCharacter::OnVerticalLook(float Axis)
+{
+	float VerticalLookRate = 45.0f;
+	AddControllerYawInput(Axis * VerticalLookRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ACPlayableCharacter::OnMoveForward(float Axis)
+{
+	FRotator r = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+	FVector direction = FQuat(r).GetForwardVector();
+	AddMovementInput(direction, Axis);
+}
+
+void ACPlayableCharacter::OnMoveRight(float Axis)
+{
+	FRotator r = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
+	FVector direction = FQuat(r).GetRightVector();
+	AddMovementInput(direction, Axis);
+}
+
+void ACPlayableCharacter::OnJump()
+{
+	Jump();
+}
+
+void ACPlayableCharacter::OffJump()
+{
+	StopJumping();
 }
 
