@@ -9,16 +9,27 @@ class UE4_CPP_MULTIPLAYER_API ACProjectile : public AActor
 {
 	GENERATED_BODY()
 
-	// TODO : 투사체 클래스 작성
+protected:
+	UPROPERTY(VisibleDefaultsOnly)
+		class USphereComponent* Sphere;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UProjectileMovementComponent* Projectile;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UStaticMeshComponent* StaticMesh;
+
 
 public:	
 	ACProjectile();
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	UFUNCTION()
+		void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

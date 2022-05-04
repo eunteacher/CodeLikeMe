@@ -23,6 +23,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class USkeletalMeshComponent* Gun; // 3인칭 총 메시
 
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCMontageComponent* Montage;
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -39,6 +42,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	// HorizontalControlRotation 리턴하는 함수 
 	virtual FRotator GetHorizontalControlRotation() override;
 
 private:
@@ -49,6 +53,9 @@ private:
 	void OnMoveRight(float Axis);
 
 public:
+	// Bind Action
 	void OnJump();
 	void OffJump();
+
+	void OnFire();
 };

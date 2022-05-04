@@ -4,8 +4,13 @@
 #include "Camera/CameraComponent.h"
 
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "Animation/AnimInstance.h"
+
+#include "Components/CMontageComponent.h"
+
+#include "Projectile/CProjectile.h"
 
 ACPlayableCharacter::ACPlayableCharacter()
 {
@@ -29,6 +34,7 @@ ACPlayableCharacter::ACPlayableCharacter()
 		mesh = fpMeshAsset.Object;
 		FPMesh->SetSkeletalMesh(mesh);
 	}
+	// 1인칭 메시 위치 값 설정
 	FPMesh->SetRelativeLocation(FVector(3.0f, -5.0f, -160.0f));
 	FPMesh->SetRelativeRotation(FRotator(2.0f, -20.0f, 5.0f));
 
@@ -45,7 +51,6 @@ ACPlayableCharacter::ACPlayableCharacter()
 	// 1인칭 총 메시 생성
 	FPGun = CreateDefaultSubobject<USkeletalMeshComponent>("FPGun");
 	FPGun->SetupAttachment(FPMesh, FName("GripPoint"));
-	//AttachToComponent(FPMesh, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false), "GripPoint");
 
 	// 1인칭 총 메시 셋팅
 	// SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'
@@ -63,7 +68,7 @@ ACPlayableCharacter::ACPlayableCharacter()
 		mesh = meshAsset.Object;
 		GetMesh()->SetSkeletalMesh(mesh);
 	}
-
+	// 메시 위치 값 설정
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
@@ -88,6 +93,18 @@ ACPlayableCharacter::ACPlayableCharacter()
 		mesh = fpGunAsset.Object;
 		Gun->SetSkeletalMesh(mesh);
 	}
+
+	// 컴포넌트 생성
+	{
+		Montage = CreateDefaultSubobject<UCMontageComponent>("Montage"); // 몽타주
+		
+	}
+
+	// CharacterMovement 값 설정
+	{
+		bUseControllerRotationYaw = false;
+	}
+
 }
 
 void ACPlayableCharacter::BeginPlay()
@@ -116,6 +133,7 @@ void ACPlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	// Bind Action
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACPlayableCharacter::OnJump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACPlayableCharacter::OffJump);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACPlayableCharacter::OnFire);
 
 }
 
@@ -160,3 +178,26 @@ void ACPlayableCharacter::OffJump()
 	StopJumping();
 }
 
+// 1. 몽타주 실행
+// 2. 투사체 생성
+// 3. 사운드 실행
+void ACPlayableCharacter::OnFire()
+{
+	// 01. 몽타주 플레이
+	Montage->OnFireMontage();
+	// 02. 투사체 생성 및 설정
+	// 트랜스폼 값 설정
+	FVector dirction = GetActorForwardVector();
+
+	// FPGun->GetSocketLocation(FName("Muzzle"))
+	FTransform transform;
+	transform.SetLocation(GetActorLocation() + 100.0f * dirction);
+	transform.SetRotation(dirction.Rotation().Quaternion());
+
+	// 생성
+	ACProjectile* spawnProjectile = GetWorld()->SpawnActorDeferred<ACProjectile>(ACProjectile::StaticClass(), transform);
+	UGameplayStatics::FinishSpawningActor(spawnProjectile, transform);
+
+	// 03. 사운드 플레이
+	Montage->OnFireSound(GetActorLocation());
+}
