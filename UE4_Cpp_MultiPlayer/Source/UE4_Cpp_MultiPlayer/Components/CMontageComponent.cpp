@@ -5,7 +5,11 @@
 
 UCMontageComponent::UCMontageComponent()
 {
-
+	ConstructorHelpers::FObjectFinder<UDataTable> FirstPersonDataTableAsset(TEXT("DataTable'/Game/DataTable/FirstPersonDataTable.FirstPersonDataTable'"));
+	if (FirstPersonDataTableAsset.Succeeded() == true)
+	{
+		FirstPersonTable = FirstPersonDataTableAsset.Object;
+	}
 }
 
 void UCMontageComponent::BeginPlay()
@@ -22,6 +26,8 @@ void UCMontageComponent::BeginPlay()
 // 입력받은 Type의 데이터를 읽어온다.
 void UCMontageComponent::ReadDataTable(UDataTable* InDataTable, EDateTableType InType)
 {
+	if (InDataTable == nullptr) return;
+
 	switch (InType)
 	{
 	case EDateTableType::FirstPerson:
@@ -47,7 +53,9 @@ void UCMontageComponent::PlayFireAnimMontage(EFirstPersonType InType)
 {
 	const FFirstPersonData* data = FirstPersonData[(int32)InType];
 	if (data != NULL && data->AnimMontage != NULL)
+	{
 		Cast<ACPlayableCharacter>(OwnerCharacter)->FPMesh->GetAnimInstance()->Montage_Play(data->AnimMontage, data->PlayRatio);
+	}
 
 }
 // 사운드 실행 함수
@@ -55,7 +63,9 @@ void UCMontageComponent::PlayFireSound(EFirstPersonType InType, FVector InLocati
 {
 	const FFirstPersonData* data = FirstPersonData[(int32)InType];
 	if (data != NULL && data->Sound != NULL)
+	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), data->Sound, InLocation);
+	}
 }
 
 // Character에서 실행할 함수

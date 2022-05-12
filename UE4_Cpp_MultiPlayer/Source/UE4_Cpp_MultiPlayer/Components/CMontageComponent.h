@@ -59,7 +59,6 @@ protected:
 	void PlayFireAnimMontage(EFirstPersonType InType);
 	void PlayFireSound(EFirstPersonType InType, FVector InLocation);
 
-
 public:	
 	// Fire
 	void OnFireMontage();

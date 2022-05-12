@@ -15,5 +15,5 @@ class UE4_CPP_MULTIPLAYER_API IICharacter
 	GENERATED_BODY()
 
 public:
-	virtual FRotator GetHorizontalControlRotation() = 0;
+	virtual FRotator GetHorizontalSyncControlRotation() = 0;
 };

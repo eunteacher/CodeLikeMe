@@ -11,5 +11,7 @@ class UE4_CPP_MULTIPLAYER_API ACGameMode : public AGameModeBase
 
 public:
 	ACGameMode();
-	
+
+protected:
+	virtual void BeginPlay() override;
 };
