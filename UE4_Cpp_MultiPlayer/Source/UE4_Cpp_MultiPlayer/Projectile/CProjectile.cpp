@@ -42,7 +42,7 @@ ACProjectile::ACProjectile()
 	}
 
 	// 리플리케이트 설정
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 // 가지고 있는 충돌체를 전부 가져와서 바인딩

@@ -5,12 +5,14 @@
 #include "Engine/DataTable.h"
 #include "CMontageComponent.generated.h"
 
+// 1인칭 상태 
 UENUM(BlueprintType)
 enum class EFirstPersonType : uint8
 {
 	Fire, Max
 };
 
+// 1인칭 데이터 
 USTRUCT(BlueprintType)
 struct FFirstPersonData : public FTableRowBase
 {
@@ -33,6 +35,7 @@ public:
 		USoundBase* Sound;
 };
 
+// 데이터 테이름 이름
 UENUM(BlueprintType)
 enum class EDateTableType : uint8
 {

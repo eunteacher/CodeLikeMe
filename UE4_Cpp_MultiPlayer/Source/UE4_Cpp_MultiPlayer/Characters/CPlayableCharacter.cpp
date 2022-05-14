@@ -6,14 +6,29 @@
 #include "Animation/AnimInstance.h"
 #include "Components/CMontageComponent.h"
 #include "Projectile/CProjectile.h"
+#include "Components/CapsuleComponent.h"
+#include "Widgets/CUserWidget_CrossHair.h"
 
 ACPlayableCharacter::ACPlayableCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 값 설정
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+
+	TurnRate = 45.0f;
+	HorizontalSyncControlRotation = FRotator(0.0f, 0.0f, 0.0f);
+
 	// 카메라 생성 및 초기값 설정
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
-	Camera->SetupAttachment(RootComponent);
+	Camera->SetupAttachment(GetCapsuleComponent());
 	Camera->SetRelativeLocation(FVector(-40.0f, 0.0f, 65.0f));
 	Camera->bUsePawnControlRotation = true;
 
@@ -23,7 +38,7 @@ ACPlayableCharacter::ACPlayableCharacter()
 
 	// 1인칭 메시 셋팅
 	USkeletalMesh* mesh;
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpMeshAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/Character/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpMeshAsset(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/Character/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
 	if (fpMeshAsset.Succeeded() == true)
 	{
 		mesh = fpMeshAsset.Object;
@@ -32,10 +47,13 @@ ACPlayableCharacter::ACPlayableCharacter()
 	// 1인칭 메시 위치 값 설정
 	FPMesh->SetRelativeLocation(FVector(3.0f, -5.0f, -160.0f));
 	FPMesh->SetRelativeRotation(FRotator(2.0f, -20.0f, 5.0f));
+	FPMesh->SetOnlyOwnerSee(true);
+	FPMesh->bCastDynamicShadow = false;
+	FPMesh->CastShadow = false;
 
 	// 1인칭 애님인스턴스 셋팅
 	TSubclassOf<UAnimInstance> animInstance;
-	ConstructorHelpers::FClassFinder<UAnimInstance> fpAnimAsset = ConstructorHelpers::FClassFinder<UAnimInstance>(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_FirstPerson.ABP_FirstPerson_C'"));
+	ConstructorHelpers::FClassFinder<UAnimInstance> fpAnimAsset(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_FirstPerson.ABP_FirstPerson_C'"));
 	if (fpAnimAsset.Succeeded() == true)
 	{
 		//UE_LOG(LogTemp, Display, TEXT("fpAnimAsset Succeeded"));
@@ -46,58 +64,58 @@ ACPlayableCharacter::ACPlayableCharacter()
 	// 1인칭 총 메시 생성
 	FPGun = CreateDefaultSubobject<USkeletalMeshComponent>("FPGun");
 	FPGun->SetupAttachment(FPMesh, FName("GripPoint"));
+	FPGun->SetOnlyOwnerSee(true);
 
 	// 1인칭 총 메시 셋팅
 	// SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpGunAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> fpGunAsset(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
 	if (fpGunAsset.Succeeded() == true)
 	{
 		mesh = fpGunAsset.Object;
 		FPGun->SetSkeletalMesh(mesh);
 	}
 
+	// 3인칭 메시 생성
+	TPMesh = CreateDefaultSubobject<USkeletalMeshComponent>("TPMesh");
+	TPMesh->SetupAttachment(GetCapsuleComponent());
+	TPMesh->SetOwnerNoSee(true);
 	// 3인칭 메시 셋팅
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> meshAsset(TEXT("SkeletalMesh'/Game/Asset/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (meshAsset.Succeeded() == true)
 	{
 		mesh = meshAsset.Object;
-		GetMesh()->SetSkeletalMesh(mesh);
+		TPMesh->SetSkeletalMesh(mesh);
 	}
 	// 메시 위치 값 설정
-	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	TPMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	TPMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
 	// 3인칭 애님인스턴스 셋팅
-	ConstructorHelpers::FClassFinder<UAnimInstance> animAsset = ConstructorHelpers::FClassFinder<UAnimInstance>(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_CPlayableCharacter.ABP_CPlayableCharacter_C'"));
+	ConstructorHelpers::FClassFinder<UAnimInstance> animAsset(TEXT("AnimBlueprint'/Game/PlayableCharacter/ABP_CPlayableCharacter.ABP_CPlayableCharacter_C'"));
 	if (animAsset.Succeeded() == true)
 	{
 		UE_LOG(LogTemp, Display, TEXT("animAsset Succeeded"));
 		animInstance = animAsset.Class;
-		GetMesh()->SetAnimInstanceClass(animInstance);
+		TPMesh->SetAnimInstanceClass(animInstance);
 	}
 
 	// 3인칭 총 메시 생성
-	Gun = CreateDefaultSubobject<USkeletalMeshComponent>("Gun");
-	Gun->SetupAttachment(GetMesh(), FName("GunSocket"));
+	TPGun = CreateDefaultSubobject<USkeletalMeshComponent>("Gun");
+	TPGun->SetupAttachment(TPMesh, FName("GunSocket"));
+	TPGun->SetOwnerNoSee(true);
 
 	// 3인칭 총 메시 셋팅
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> GunAsset = ConstructorHelpers::FObjectFinder<USkeletalMesh>(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> GunAsset(TEXT("SkeletalMesh'/Game/Asset/FirstPerson/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
 	if (GunAsset.Succeeded() == true)
 	{
 		mesh = GunAsset.Object;
-		Gun->SetSkeletalMesh(mesh);
+		TPGun->SetSkeletalMesh(mesh);
 	}
 
 	// 컴포넌트 생성
-	{
-		Montage = CreateDefaultSubobject<UCMontageComponent>("Montage"); // 몽타주
-
-	}
-
-	// CharacterMovement 값 설정
-	{
-		bUseControllerRotationYaw = true;
-	}
+	Muzzle = CreateDefaultSubobject<USceneComponent>("Muzzle");
+	Muzzle->SetupAttachment(FPGun, FName("Muzzle"));
+	Montage = CreateDefaultSubobject<UCMontageComponent>("Montage"); // 몽타주
 
 }
 
@@ -105,6 +123,16 @@ void ACPlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (WidgetCrossHairClass != nullptr)
+	{
+		// 위젯_CrossHair 생성
+		Widget_CrossHair = CreateWidget<UCUserWidget_CrossHair>(GetController<APlayerController>(), WidgetCrossHairClass);
+		if (Widget_CrossHair != nullptr)
+		{
+			// 위젯 띄우기
+			Widget_CrossHair->AddToViewport();
+		}
+	}
 }
 
 void ACPlayableCharacter::Tick(float DeltaTime)
@@ -139,15 +167,14 @@ FRotator ACPlayableCharacter::GetHorizontalSyncControlRotation()
 // 마우스 X축 
 void ACPlayableCharacter::OnHorizontalLook(float Axis)
 {
-	float HorizontalLookRate = 45.0f;
-	AddControllerYawInput(Axis * HorizontalLookRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(Axis * TurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 // 마우스 Y축
 void ACPlayableCharacter::OnVerticalLook(float Axis)
 {
-	float VerticalLookRate = -45.0f;
-	AddControllerPitchInput(Axis * VerticalLookRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(Axis * TurnRate * GetWorld()->GetDeltaSeconds());
+
 	if (IsLocallyControlled() == true)
 	{
 		if (HasAuthority() == true)
@@ -160,18 +187,20 @@ void ACPlayableCharacter::OnVerticalLook(float Axis)
 		}
 	}
 }
+
 // 정면 방향 
 void ACPlayableCharacter::OnMoveForward(float Axis)
 {
 	FRotator r = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
-	FVector direction = FQuat(r).GetForwardVector();
+	FVector direction = FRotationMatrix(r).GetUnitAxis(EAxis::X);
 	AddMovementInput(direction, Axis);
 }
+
 // 오른쪽 방향 
 void ACPlayableCharacter::OnMoveRight(float Axis)
 {
 	FRotator r = FRotator(0.0f, GetControlRotation().Yaw, 0.0f);
-	FVector direction = FQuat(r).GetRightVector();
+	FVector direction = FRotationMatrix(r).GetUnitAxis(EAxis::Y);
 	AddMovementInput(direction, Axis);
 }
 
@@ -194,22 +223,18 @@ void ACPlayableCharacter::OnFire()
 	// 01. 몽타주 플레이
 	Montage->OnFireMontage();
 	// 02. 투사체 생성 및 설정
-	// 트랜스폼 값 설정 - 위치와 방향
-	//FVector location = GetActorLocation();
-	FVector location = FPGun->GetSocketLocation(FName("Muzzle"));
-	FRotator rotation = Camera->GetRelativeRotation();
-	FVector gunOffset = FVector(100.0f, 0.0f, -10.0f);
-	location += UKismetMathLibrary::Quat_RotateVector(rotation.Quaternion(), gunOffset);
-
-	FTransform transform;
-	transform.SetLocation(location);
-	transform.SetRotation(rotation.Quaternion());
+	APlayerController* playerController = Cast<APlayerController>(GetController());
+	FRotator rotation = playerController->PlayerCameraManager->GetCameraRotation();
+	FVector gunOffset = FVector(100.0f, 0.0f, 10.0f);
+	FVector location = Muzzle->GetComponentLocation() + rotation.RotateVector(gunOffset);
 	// 03. 액터 생성
-	GetWorld()->SpawnActor<ACProjectile>(ACProjectile::StaticClass(), transform);
+	GetWorld()->SpawnActor<ACProjectile>(ACProjectile::StaticClass(), location, rotation);
 	// 04. 사운드 플레이
 	Montage->OnFireSound(GetActorLocation());
 }
 
+// 서버만 리플레케이트
+// 위, 아래로 움직였일 경우 방향 값 설정
 void ACPlayableCharacter::ServerSyncControllRotation_Implementation(FRotator InHorizontalSyncControlRotation)
 {
 	HorizontalSyncControlRotation = InHorizontalSyncControlRotation;
@@ -219,6 +244,8 @@ void ACPlayableCharacter::ServerSyncControllRotation_Implementation(FRotator InH
 	}
 }
 
+// 서버와 클라이언트 모두 리플레케이트
+// 위, 아래로 움직였일 경우 방향 값 설정
 void ACPlayableCharacter::ServerSyncMulticastControllRotation_Implementation(FRotator InHorizontalSyncControlRotation)
 {
 	HorizontalSyncControlRotation = InHorizontalSyncControlRotation;

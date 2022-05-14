@@ -5,36 +5,44 @@
 #include "Characters/ICharacter.h"
 #include "CPlayableCharacter.generated.h"
 
-class UCMontageComponent;
-class UCameraComponent;
-class USkeletalMeshComponent;
-class ACProjectile;
-class UInputComponent;
-
 UCLASS()
 class UE4_CPP_MULTIPLAYER_API ACPlayableCharacter : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
-public: // 방향
+public:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		float TurnRate; // 방향 비율
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		FRotator HorizontalSyncControlRotation; // 수직 방향
 
 public: // 컴퍼넌트
 	UPROPERTY(VisibleAnywhere)
-		UCameraComponent* Camera; // 카메라
+		class UCameraComponent* Camera; // 카메라
 
 	UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* FPMesh; // 1인칭 메시
+		class USkeletalMeshComponent* FPMesh; // 1인칭 메시
 
 	UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* FPGun; // 1인칭 총 메시
+		class USkeletalMeshComponent* FPGun; // 1인칭 총 메시
 
 	UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* Gun; // 3인칭 총 메시
+		class USkeletalMeshComponent* TPMesh; // 1인칭 메시
+
+	UPROPERTY(VisibleAnywhere)
+		class USkeletalMeshComponent* TPGun; // 3인칭 총 메시
+
+	UPROPERTY(VisibleAnywhere)
+		class USceneComponent* Muzzle; // 투사체 발사
 
 	UPROPERTY(VisibleDefaultsOnly)
-		UCMontageComponent* Montage;
+		class UCMontageComponent* Montage;
+
+public:
+	// BP를 통해서 입력
+	UPROPERTY(EditAnywhere, Category = "Widget")
+		TSubclassOf<class UCUserWidget_CrossHair> WidgetCrossHairClass; // 위젯 클래스
 
 
 public:
@@ -45,7 +53,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
 	// HorizontalControlRotation 리턴하는 함수 
@@ -62,7 +70,6 @@ public:
 	// Bind Action
 	void OnJump();
 	void OffJump();
-
 	void OnFire();
 
 public:
@@ -72,4 +79,6 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 		void ServerSyncMulticastControllRotation(FRotator InHorizontalSyncControlRotation);
 
+private:
+	class UCUserWidget_CrossHair* Widget_CrossHair;
 };

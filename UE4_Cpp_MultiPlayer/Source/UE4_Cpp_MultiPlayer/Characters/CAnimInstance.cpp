@@ -18,10 +18,11 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
 	if (OwnerCharacter != nullptr)
 	{
-		Speed = OwnerCharacter->GetVelocity().Size2D();
-		Direction = CalculateDirection(OwnerCharacter->GetVelocity(), OwnerCharacter->GetControlRotation());
-		IsAir = OwnerCharacter->GetCharacterMovement()->IsFalling();
+		Speed = OwnerCharacter->GetVelocity().Size2D(); // 스피드 값 설정
+		Direction = CalculateDirection(OwnerCharacter->GetVelocity(), OwnerCharacter->GetActorRotation()); // 방향 설정
+		IsAir = OwnerCharacter->GetCharacterMovement()->IsFalling(); // 공중 여부 판단
 
+		// 속도를 통해 움직임 여부 판단
 		if (OwnerCharacter->GetVelocity().Size() > 0.0f)
 		{
 			IsMoving = true;
@@ -36,6 +37,7 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
+// spine이 움직일 방향 값 설정 
 void UCAnimInstance::LookUp()
 {
 	FRotator r = Cast<IICharacter>(OwnerCharacter)->GetHorizontalSyncControlRotation();
@@ -49,5 +51,5 @@ void UCAnimInstance::LookUp()
 		r.Pitch *= -1.0f;
 	}
 
-	ControlRotation.Roll = r.Pitch;
+	ControlRotation = FRotator(0.0f, 0.0f, r.Pitch);
 }
