@@ -35,4 +35,11 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UStaticMeshComponent* StaticMesh;
 
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+		class UParticleSystem* ImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+		class UParticleSystem* TrailEffect;
+
 };

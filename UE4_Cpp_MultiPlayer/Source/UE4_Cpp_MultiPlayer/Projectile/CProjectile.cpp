@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Particles/ParticleSystem.h"
 
 ACProjectile::ACProjectile()
 {
@@ -73,12 +74,13 @@ void ACProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	UE_LOG(LogTemp, Display, TEXT("Projectile Hit"));
 
 	// IsSimulatingPhysics() 지정된 바디가 현재 물리 시뮬레이션을 사용하고 있는지 여부를 반환
-	if (OtherComp->IsSimulatingPhysics() == true)
-	{
-		//UE_LOG(LogTemp, Display, TEXT("Projectile Hit"));
-		OtherComp->AddImpulseAtLocation(FVector(GetVelocity() * 100.0f), FVector(GetActorLocation()));
-		Destroyed();
-	}
+	//if (OtherComp->IsSimulatingPhysics() == true)
+	//{
+	//	//UE_LOG(LogTemp, Display, TEXT("Projectile Hit"));
+	//	OtherComp->AddImpulseAtLocation(FVector(GetVelocity() * 100.0f), FVector(GetActorLocation()));
+	//	Destroyed();
+	//}
+
+
 
 }
-

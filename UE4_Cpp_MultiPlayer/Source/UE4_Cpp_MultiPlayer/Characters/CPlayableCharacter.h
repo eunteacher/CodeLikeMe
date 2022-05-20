@@ -36,6 +36,9 @@ public: // 컴퍼넌트
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Muzzle; // 투사체 발사
 
+	UPROPERTY(VisibleAnywhere)
+		class UParticleSystemComponent* MuzzleParticle; // 투사체 발사
+
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCMontageComponent* Montage;
 
@@ -43,7 +46,6 @@ public:
 	// BP를 통해서 입력
 	UPROPERTY(EditAnywhere, Category = "Widget")
 		TSubclassOf<class UCUserWidget_CrossHair> WidgetCrossHairClass; // 위젯 클래스
-
 
 public:
 	ACPlayableCharacter();
@@ -71,6 +73,8 @@ public:
 	void OnJump();
 	void OffJump();
 	void OnFire();
+	void OffFire();
+
 
 public:
 	UFUNCTION(Server, Unreliable)
@@ -81,4 +85,5 @@ public:
 
 private:
 	class UCUserWidget_CrossHair* Widget_CrossHair;
+
 };

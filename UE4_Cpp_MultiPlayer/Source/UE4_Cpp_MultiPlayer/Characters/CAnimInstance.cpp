@@ -8,14 +8,13 @@ void UCAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
 
-
+	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
 }
 
 void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
 	if (OwnerCharacter != nullptr)
 	{
 		Speed = OwnerCharacter->GetVelocity().Size2D(); // 스피드 값 설정
